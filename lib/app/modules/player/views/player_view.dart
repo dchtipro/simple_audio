@@ -24,29 +24,36 @@ class PlayerView extends GetView<PlayerController> {
             child: PlayerCardWidget(),
           ),
           Expanded(
-              flex: 3,
-              child: Container(
-                margin: EdgeInsets.all(12.0),
+            flex: 3,
+            child: Container(
+                margin: EdgeInsets.all(8.0),
                 decoration: const BoxDecoration(
                     borderRadius: BorderRadius.all(
                       Radius.circular(18),
                     ),
                     color: kActiveCardColour),
-                child: ListView.separated(
-                    itemBuilder: (context, index) => Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Text(
-                                'Item1',
-                                style: kBodyTextStyle.copyWith(fontSize: 14),
+                child: Obx(() => controller.isLoading.isTrue
+                    ? Center(child: CircularProgressIndicator())
+                    : ListView.separated(
+                        itemBuilder: (context, index) {
+                          final _question = controller.questions.first.answers;
+
+                          return Row(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: Text(
+                                  _question![index].labels![0].fileName!,
+                                  style: kBodyTextStyle.copyWith(fontSize: 14),
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                    separatorBuilder: (context, index) => Divider(),
-                    itemCount: 5),
-              ))
+                            ],
+                          );
+                        },
+                        separatorBuilder: (context, index) => Divider(),
+                        itemCount:
+                            controller.questions.first.answers!.length))),
+          ),
         ],
       ),
     );

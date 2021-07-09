@@ -9,6 +9,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   get: 4.1.4
   audioplayers: ^0.19.1
+  http: ^0.13.3
   flutter: 
     sdk: flutter
 
@@ -18,4 +19,11 @@ dev_dependencies:
 
 flutter: 
   uses-material-design: true
+  assets:
+    - assets/audios/
+
+  fonts:
+    - family: Comfortaa
+      fonts:
+        - asset: assets/fonts/Comfortaa-Regular.ttf
 
