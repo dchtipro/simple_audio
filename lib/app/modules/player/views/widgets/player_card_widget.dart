@@ -1,5 +1,7 @@
+import 'package:audio_player_liontude/app/modules/player/controllers/player_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:get/get.dart';
 
 import '../../../../../constants.dart';
 
@@ -11,8 +13,8 @@ class PlayerCardWidget extends StatefulWidget {
 }
 
 class _PlayerCardWidgetState extends State<PlayerCardWidget> {
-  bool playing = false;
-  IconData playBtn = Icons.play_arrow;
+  //bool playing = false;
+  //IconData playBtn = Icons.play_arrow;
 
   late AudioPlayer _player;
   late AudioCache cache;
@@ -55,6 +57,7 @@ class _PlayerCardWidgetState extends State<PlayerCardWidget> {
     cache.load('0a4a1054abdd899ca409e635ad1ea843.mp3');
   }
 
+  PlayerController controller = Get.find();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -86,21 +89,14 @@ class _PlayerCardWidgetState extends State<PlayerCardWidget> {
               ),
               IconButton(
                 onPressed: () {
-                  if (!playing) {
+                  controller.actionPlayButton();
+                  if (!controller.playing.isFalse) {
                     cache.play('0a4a1054abdd899ca409e635ad1ea843.mp3');
-                    setState(() {
-                      playBtn = Icons.pause;
-                      playing = true;
-                    });
                   } else {
                     _player.pause();
-                    setState(() {
-                      playBtn = Icons.play_arrow;
-                      playing = false;
-                    });
                   }
                 },
-                icon: Icon(playBtn),
+                icon: Icon(controller.playBtn),
                 iconSize: 55,
               ),
               IconButton(
