@@ -15,10 +15,6 @@ class HomeCard extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            /*Text(
-              'Go Player',
-              style: kLabelTextStyleInc,
-            ),*/
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[

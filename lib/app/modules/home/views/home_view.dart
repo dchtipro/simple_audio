@@ -1,4 +1,5 @@
 import 'package:audio_player_liontude/app/modules/home/views/widgets/home_card_widget.dart';
+import 'package:audio_player_liontude/app/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
@@ -17,11 +18,7 @@ class HomeView extends GetView<HomeController> {
           Expanded(
             //flex: 1,
             child: HomeCard(onPress: () {
-              /*Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => PlayerView()),
-              );
-              print('onPress Home');*/
+              Get.toNamed(Routes.PLAYER);
             }),
           ),
         ],

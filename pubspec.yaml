@@ -1,13 +1,14 @@
 name: audio_player_liontude
 version: 1.0.0+1
 publish_to: none
-description: A new Flutter project.
+description: A Simple Audio Player for Liontude.
 environment: 
   sdk: '>=2.12.0 <3.0.0'
 
 dependencies: 
   cupertino_icons: ^1.0.2
   get: 4.1.4
+  audioplayers: ^0.19.1
   flutter: 
     sdk: flutter
 
