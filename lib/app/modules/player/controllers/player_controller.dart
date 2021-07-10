@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:audio_service/audio_service.dart';
@@ -9,8 +10,9 @@ class PlayerController extends GetxController {
   var playing = false.obs;
   var idle = false.obs;
   var isLoading = false.obs;
+  final scrollController = ScrollController();
 
-  AudioPlayer player = AudioPlayer();
+  AudioPlayer player = AudioPlayer(mode: PlayerMode.MEDIA_PLAYER);
   var cache = AudioCache().obs;
 
   var position = new Duration().obs;
@@ -74,39 +76,18 @@ class PlayerController extends GetxController {
   void onClose() {}
 
   actionPlayButton(int index) {
-    print('en actionButton');
-    print('Playing = ' + playing.value.toString());
-    print('Active = ' + active.value.toString());
-
-    print(!playing.value);
     if (!playing.value) {
-      print('dentro del if');
       active.value = index;
-      if (!idle.value) {
-        idle.value = true;
+      idle.value = true;
+
+      if (idle.value) {
         playAudio(active.value);
-        if (active.value < _audios.length) {
-          active.value++;
-        } else {
-          active.value = 0;
-        }
       }
-
-      //cache.value.play(_audios[active.value].fileName!);
-
-      //cache.value.play(_audios[index].fileName!);
-
-      playing.value = true;
-      //idle.value = true;
-
-      print('Playing = ' + playing.value.toString());
-      print('Active = ' + active.value.toString());
     } else {
       playing.value = false;
       idle.value = false;
-      //idle.value = false;
-      cache.value.fixedPlayer!.pause();
-      print('Playing = ' + playing.value.toString());
+      cache.value.fixedPlayer!.stop();
+      //cache.value.fixedPlayer!.release();
     }
   }
 
@@ -116,20 +97,38 @@ class PlayerController extends GetxController {
   }
 
   Future<void> playAudio(int index) async {
-    await cache.value.play(_audios[active.value].fileName!, stayAwake: true);
+    playing.value = true;
+    print('DENTRO DE PLAY AUDIO');
+    print(index);
+    await cache.value.load(_audios[index].fileName!);
+    cache.value.play(_audios[index].fileName!);
+    scrollController.animateTo(60.0 * index,
+        duration: Duration(seconds: 1), curve: Curves.easeIn);
+    /* Future.delayed(Duration(seconds: 1), () {
+      cache.value.play(_audios[index].fileName!);
+      scrollController.animateTo(50.0 * index,
+          duration: Duration(seconds: 1), curve: Curves.easeIn);
+    });*/
+
     AudioServiceBackground.sendCustomEvent({'PLAY_EVENT': true});
-    await cache.value.fixedPlayer!.onPlayerCompletion.listen((event) {
+
+    cache.value.fixedPlayer!.onPlayerCompletion.listen((event) {
       print('onPlayerCompletion');
+      print(audioLength.value.toString());
+
       AudioServiceBackground.sendCustomEvent({'COMPLETE_EVENT': true});
       if (idle.value) {
         print('en Idle');
         print(active.value);
-        playAudio(active.value);
         if (active.value < _audios.length) {
           active.value++;
         } else {
           active.value = 0;
         }
+        this.cache.value.load(_audios[active.value].fileName!);
+        this.cache.value.play(_audios[active.value].fileName!);
+        scrollController.animateTo(65.0 * active.value,
+            duration: Duration(seconds: 1), curve: Curves.easeIn);
       }
     });
   }

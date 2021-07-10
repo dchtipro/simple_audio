@@ -7,6 +7,15 @@ import '../../../../constants.dart';
 import '../controllers/player_controller.dart';
 
 class PlayerView extends GetView<PlayerController> {
+  final double _height = 50;
+  final _scrollController = ScrollController();
+  void _scrollToIndex(index) {
+    print('dentro de scroll to index');
+    print(index);
+    _scrollController.animateTo(_height * index,
+        duration: Duration(seconds: 1), curve: Curves.easeIn);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,23 +44,31 @@ class PlayerView extends GetView<PlayerController> {
                 child: Obx(() => controller.isLoading.isTrue
                     ? Center(child: CircularProgressIndicator())
                     : ListView.separated(
+                        controller: controller.scrollController,
                         itemBuilder: (context, index) {
-                          controller.cache.value
-                              .load(controller.audios[index].fileName!);
+                          /*    controller.cache.value
+                              .load(controller.audios[index].fileName!);*/
                           //print(controller.active.value);
                           //print('en la Vista');
-                          return ListTile(
-                            onTap: () {
-                              controller.active.value = index;
-                              controller
-                                  .actionPlayButton(controller.active.value);
-                            },
-                            title: Text(
-                              controller.audios[index].text!,
-                              style: TextStyle(
-                                  color: (controller.active == index)
-                                      ? Colors.red
-                                      : Colors.white),
+                          return Container(
+                            height: _height,
+                            child: ListTile(
+                              onTap: () {
+                                controller.active.value = index;
+                                controller
+                                    .actionPlayButton(controller.active.value);
+                                _scrollToIndex(
+                                    controller.active.value.toDouble());
+                              },
+                              title: Obx(
+                                () => Text(
+                                  controller.audios[index].text!,
+                                  style: TextStyle(
+                                      color: (controller.active == index)
+                                          ? Colors.red
+                                          : Colors.white),
+                                ),
+                              ),
                             ),
                           );
                         },
