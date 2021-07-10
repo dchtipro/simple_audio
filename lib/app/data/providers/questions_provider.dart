@@ -23,8 +23,8 @@ class QuestionsProvider extends GetConnect {
         'X-Api-Version': '2',
       },
     );
-    print(response.body);
-    print('antes del return');
+    //print(response.body);
+    //print('antes del return');
     return response.body;
   }
 

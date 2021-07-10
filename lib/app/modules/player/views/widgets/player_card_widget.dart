@@ -1,112 +1,69 @@
 import 'package:audio_player_liontude/app/modules/player/controllers/player_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:get/get.dart';
+import 'package:audio_player_liontude/app/modules/player/views/widgets/slider_player_widget.dart';
 
 import '../../../../../constants.dart';
 
-class PlayerCardWidget extends StatefulWidget {
+class PlayerCardWidget extends StatelessWidget {
   const PlayerCardWidget({Key? key}) : super(key: key);
 
   @override
-  _PlayerCardWidgetState createState() => _PlayerCardWidgetState();
-}
-
-class _PlayerCardWidgetState extends State<PlayerCardWidget> {
-  //bool playing = false;
-  //IconData playBtn = Icons.play_arrow;
-
-  late AudioPlayer _player;
-  late AudioCache cache;
-
-  Duration position = new Duration();
-  Duration musicLength = new Duration();
-
-  Widget slider() {
-    return Slider.adaptive(
-        activeColor: Color(0xfffcba29),
-        inactiveColor: Colors.grey,
-        value: position.inSeconds.toDouble(),
-        max: musicLength.inSeconds.toDouble(),
-        onChanged: (value) {
-          seekToSec(value.toInt());
-        });
-  }
-
-  void seekToSec(int sec) {
-    Duration newPos = Duration(seconds: sec);
-    _player.seek(newPos);
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-
-    super.initState();
-    _player = AudioPlayer();
-    cache = AudioCache(fixedPlayer: _player, prefix: 'assets/audios/');
-    _player.onDurationChanged.listen((Duration d) {
-      print('Max duration: $d');
-      setState(() => musicLength = d);
-    });
-
-    _player.onAudioPositionChanged.listen((Duration p) {
-      print('Current position: $p');
-      setState(() => position = p);
-    });
-    cache.load('0a4a1054abdd899ca409e635ad1ea843.mp3');
-  }
-
-  PlayerController controller = Get.find();
-  @override
   Widget build(BuildContext context) {
+    PlayerController controller = Get.find();
+
     return Container(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-          /*Text(
-              'Go Player',
-              style: kLabelTextStyleInc,
-            ),*/
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                  '${position.inMinutes}: ${position.inSeconds.remainder(60)}'),
-              slider(),
-              Text(
-                  '${musicLength.inMinutes}: ${musicLength.inSeconds.remainder(60)}'),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.skip_previous),
-                iconSize: 45,
-              ),
-              IconButton(
-                onPressed: () {
-                  controller.actionPlayButton();
-                  if (!controller.playing.isFalse) {
-                    cache.play('0a4a1054abdd899ca409e635ad1ea843.mp3');
-                  } else {
-                    _player.pause();
-                  }
-                },
-                icon: Icon(controller.playBtn),
-                iconSize: 55,
-              ),
-              IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.skip_next),
-                iconSize: 45,
-              ),
-            ],
-          ),
-        ],
+      child: GetBuilder<PlayerController>(
+        builder: (_) => Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            /*Text(
+                'Go Player',
+                style: kLabelTextStyleInc,
+              ),*/
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                    '${controller.position.inMinutes}: ${controller.position.inSeconds.remainder(60)}'),
+                SliderPlayer(),
+                Text(
+                    '${controller.audioLength.inMinutes}: ${controller.audioLength.inSeconds.remainder(60)}'),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                IconButton(
+                  onPressed: () {},
+                  icon: Icon(Icons.skip_previous),
+                  iconSize: 45,
+                ),
+                IconButton(
+                  onPressed: () {
+                    controller.actionPlayButton(controller.active.value);
+                    /*  if (!controller.playing.isFalse) {
+                      controller.cache
+                          .play('0a4a1054abdd899ca409e635ad1ea843.mp3');
+                    } else {
+                      controller.player.pause();
+                    }*/
+                  },
+                  icon: (controller.playing.isTrue)
+                      ? Icon(Icons.pause)
+                      : Icon(Icons.play_arrow),
+                  iconSize: 55,
+                ),
+                IconButton(
+                  onPressed: () {},
+                  icon: Icon(Icons.skip_next),
+                  iconSize: 45,
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
       margin: EdgeInsets.all(6.0),
       decoration: BoxDecoration(

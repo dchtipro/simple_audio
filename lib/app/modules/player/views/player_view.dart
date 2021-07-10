@@ -20,7 +20,7 @@ class PlayerView extends GetView<PlayerController> {
               flex: 1,
               child: Center(child: Text('Simple Audio Player Liontude'))),
           Expanded(
-            flex: 2,
+            flex: 1,
             child: PlayerCardWidget(),
           ),
           Expanded(
@@ -36,23 +36,25 @@ class PlayerView extends GetView<PlayerController> {
                     ? Center(child: CircularProgressIndicator())
                     : ListView.separated(
                         itemBuilder: (context, index) {
-                          final _question = controller.questions.first.answers;
-
-                          return Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(12.0),
-                                child: Text(
-                                  _question![index].labels![0].fileName!,
-                                  style: kBodyTextStyle.copyWith(fontSize: 14),
-                                ),
-                              ),
-                            ],
+                          controller.cache
+                              .load(controller.audios[index].fileName!);
+                          //print(controller.active.value);
+                          //print('en la Vista');
+                          return ListTile(
+                            onTap: () {
+                              controller.actionPlayButton(index);
+                            },
+                            title: Text(
+                              controller.audios[index].text!,
+                              style: TextStyle(
+                                  color: (controller.active == index)
+                                      ? Colors.red
+                                      : Colors.white),
+                            ),
                           );
                         },
                         separatorBuilder: (context, index) => Divider(),
-                        itemCount:
-                            controller.questions.first.answers!.length))),
+                        itemCount: controller.audios.length))),
           ),
         ],
       ),
