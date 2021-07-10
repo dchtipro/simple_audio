@@ -1,18 +1,20 @@
 import 'package:get/get.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:audio_service/audio_service.dart';
 import 'package:audio_player_liontude/app/data/models/questions_model.dart';
 import 'package:audio_player_liontude/app/data/providers/questions_provider.dart';
 
 class PlayerController extends GetxController {
   var active = 0.obs;
   var playing = false.obs;
+  var idle = false.obs;
   var isLoading = false.obs;
 
   AudioPlayer player = AudioPlayer();
-  AudioCache cache = AudioCache();
+  var cache = AudioCache().obs;
 
-  Duration position = new Duration();
-  Duration audioLength = new Duration();
+  var position = new Duration().obs;
+  var audioLength = new Duration().obs;
 
   final _questions = <Questions>[].obs;
   final _audios = <Labels>[].obs;
@@ -25,16 +27,18 @@ class PlayerController extends GetxController {
   void onInit() {
     print('en InitPlayerCOntroller');
     //_player = AudioPlayer();
-    cache = AudioCache(fixedPlayer: player, prefix: 'assets/audios/');
-    player.onDurationChanged.listen((Duration d) {
+    cache.value = AudioCache(fixedPlayer: player, prefix: 'assets/audios/');
+    //cache.value.loadAll(_audios);
+    cache.value.fixedPlayer!.onDurationChanged.listen((Duration d) {
       //print('Max duration: $d');
-      audioLength = d;
+      audioLength.value = d;
     });
 
-    player.onAudioPositionChanged.listen((Duration p) {
+    cache.value.fixedPlayer!.onAudioPositionChanged.listen((Duration p) {
       //print('Current position: $p');
-      position = p;
+      position.value = p;
     });
+
     _getQuestions();
 
     super.onInit();
@@ -73,27 +77,60 @@ class PlayerController extends GetxController {
     print('en actionButton');
     print('Playing = ' + playing.value.toString());
     print('Active = ' + active.value.toString());
-    active++;
 
     print(!playing.value);
-    if (!playing.isTrue) {
+    if (!playing.value) {
       print('dentro del if');
-      cache
-          .play(_audios[index].fileName!)
-          .whenComplete(() => print('Complete'));
-      playing.value = true;
-      print('Playing = ' + playing.value.toString());
-    } else {
-      print('dentro del else');
-      player.pause();
+      active.value = index;
+      if (!idle.value) {
+        idle.value = true;
+        playAudio(active.value);
+        if (active.value < _audios.length) {
+          active.value++;
+        } else {
+          active.value = 0;
+        }
+      }
 
+      //cache.value.play(_audios[active.value].fileName!);
+
+      //cache.value.play(_audios[index].fileName!);
+
+      playing.value = true;
+      //idle.value = true;
+
+      print('Playing = ' + playing.value.toString());
+      print('Active = ' + active.value.toString());
+    } else {
       playing.value = false;
+      idle.value = false;
+      //idle.value = false;
+      cache.value.fixedPlayer!.pause();
       print('Playing = ' + playing.value.toString());
     }
   }
 
   void seekToSec(int sec) {
     Duration newPos = Duration(seconds: sec);
-    player.seek(newPos);
+    cache.value.fixedPlayer!.seek(newPos);
+  }
+
+  Future<void> playAudio(int index) async {
+    await cache.value.play(_audios[active.value].fileName!, stayAwake: true);
+    AudioServiceBackground.sendCustomEvent({'PLAY_EVENT': true});
+    await cache.value.fixedPlayer!.onPlayerCompletion.listen((event) {
+      print('onPlayerCompletion');
+      AudioServiceBackground.sendCustomEvent({'COMPLETE_EVENT': true});
+      if (idle.value) {
+        print('en Idle');
+        print(active.value);
+        playAudio(active.value);
+        if (active.value < _audios.length) {
+          active.value++;
+        } else {
+          active.value = 0;
+        }
+      }
+    });
   }
 }

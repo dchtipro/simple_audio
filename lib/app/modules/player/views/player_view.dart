@@ -36,13 +36,15 @@ class PlayerView extends GetView<PlayerController> {
                     ? Center(child: CircularProgressIndicator())
                     : ListView.separated(
                         itemBuilder: (context, index) {
-                          controller.cache
+                          controller.cache.value
                               .load(controller.audios[index].fileName!);
                           //print(controller.active.value);
                           //print('en la Vista');
                           return ListTile(
                             onTap: () {
-                              controller.actionPlayButton(index);
+                              controller.active.value = index;
+                              controller
+                                  .actionPlayButton(controller.active.value);
                             },
                             title: Text(
                               controller.audios[index].text!,

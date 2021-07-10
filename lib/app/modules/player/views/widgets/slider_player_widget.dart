@@ -8,13 +8,15 @@ class SliderPlayer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     PlayerController controller = Get.find();
-    return Slider.adaptive(
-        activeColor: Color(0xfffcba29),
-        inactiveColor: Colors.grey,
-        value: controller.position.inSeconds.toDouble(),
-        max: controller.audioLength.inSeconds.toDouble(),
-        onChanged: (value) {
-          controller.seekToSec(value.toInt());
-        });
+    return Obx(
+      () => Slider.adaptive(
+          activeColor: Color(0xfffcba29),
+          inactiveColor: Colors.grey,
+          value: controller.position.value.inSeconds.toDouble(),
+          max: controller.audioLength.value.inSeconds.toDouble(),
+          onChanged: (value) {
+            controller.seekToSec(value.toInt());
+          }),
+    );
   }
 }

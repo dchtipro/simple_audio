@@ -10,60 +10,63 @@ class PlayerCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    PlayerController controller = Get.find();
+    PlayerController playerController = Get.find();
 
     return Container(
-      child: GetBuilder<PlayerController>(
-        builder: (_) => Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            /*Text(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          /*Text(
                 'Go Player',
                 style: kLabelTextStyleInc,
               ),*/
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                    '${controller.position.inMinutes}: ${controller.position.inSeconds.remainder(60)}'),
-                SliderPlayer(),
-                Text(
-                    '${controller.audioLength.inMinutes}: ${controller.audioLength.inSeconds.remainder(60)}'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.skip_previous),
-                  iconSize: 45,
-                ),
-                IconButton(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Obx(
+                () => Text(
+                    '${playerController.position.value.inMinutes}: ${playerController.position.value.inSeconds.remainder(60)}'),
+              ),
+              SliderPlayer(),
+              Text(
+                  '${playerController.audioLength.value.inMinutes}: ${playerController.audioLength.value.inSeconds.remainder(60)}'),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              IconButton(
+                onPressed: () {},
+                icon: Icon(Icons.skip_previous),
+                iconSize: 45,
+              ),
+              Obx(
+                () => IconButton(
                   onPressed: () {
-                    controller.actionPlayButton(controller.active.value);
+                    playerController
+                        .actionPlayButton(playerController.active.value);
                     /*  if (!controller.playing.isFalse) {
-                      controller.cache
-                          .play('0a4a1054abdd899ca409e635ad1ea843.mp3');
-                    } else {
-                      controller.player.pause();
-                    }*/
+                        controller.cache
+                            .play('0a4a1054abdd899ca409e635ad1ea843.mp3');
+                      } else {
+                        controller.player.pause();
+                      }*/
                   },
-                  icon: (controller.playing.isTrue)
+                  icon: (playerController.playing.isTrue)
                       ? Icon(Icons.pause)
                       : Icon(Icons.play_arrow),
                   iconSize: 55,
                 ),
-                IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.skip_next),
-                  iconSize: 45,
-                ),
-              ],
-            ),
-          ],
-        ),
+              ),
+              IconButton(
+                onPressed: () {},
+                icon: Icon(Icons.skip_next),
+                iconSize: 45,
+              ),
+            ],
+          ),
+        ],
       ),
       margin: EdgeInsets.all(6.0),
       decoration: BoxDecoration(

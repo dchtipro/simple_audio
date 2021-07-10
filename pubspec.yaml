@@ -9,6 +9,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   get: 4.1.4
   audioplayers: ^0.19.1
+  audio_service: ^0.17.1
   grouped_list: ^4.0.0
   http: ^0.13.3
   flutter: 
